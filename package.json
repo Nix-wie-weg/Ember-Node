@@ -8,6 +8,10 @@
   "dependencies": {
     "express": "3.4.0",
     "ejs": "*",
-    "mongoose": "~3.6.19"
+    "mongoose": "~3.6.19",
+    "connect-assets": "~2.5.2",
+    "phantom": "~0.5.2",
+    "redis": "~0.8.6",
+    "hiredis": "~0.1.15"
   }
 }

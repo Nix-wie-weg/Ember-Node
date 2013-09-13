@@ -1,22 +1,165 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Express demo app</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- css('bootstrap.min') %>
+    <%- css('application') %>
   </head>
   <body>
-    <div>
-      <script type="text/x-handlebars">
+    <script type="text/x-handlebars" data-template-name="loading">
+      <div class="container">
+        Loading...
+      </div>
+    </script>
+
+    <!-- Application template -->
+    <script type="text/x-handlebars">
+      <nav class='navbar navbar-default navbar-fixed-top' role='navigation'>
+        <div class='navbar-header'>
+          <button class='navbar-toggle' data-target='.navbar-ex1-collapse' data-toggle='collapse' type='button'>
+            <span class='sr-only'>Toggle navigation</span>
+            <span class='icon-bar'></span>
+            <span class='icon-bar'></span>
+            <span class='icon-bar'></span>
+          </button>
+          {{#linkTo "index" class="navbar-brand"}}Ember demo app{{/linkTo}}
+        </div>
+        <div class='collapse navbar-collapse navbar-ex1-collapse'>
+          <ul class='nav navbar-nav'>
+            <li class="active">{{#linkTo "posts"}}Posts{{/linkTo}}</li>
+            <li>{{#linkTo "about"}}About{{/linkTo}}</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container">
         {{outlet}}
-      </script>
-      <script type="text/x-handlebars"  data-template-name="test">
-        Hallo!
-      </script>
-    </div>
-    <script type="text/javascript" src="javascripts/libs/jquery-1.9.1.js"></script>
-    <script type="text/javascript" src="javascripts/libs/handlebars-1.0.0.js"></script>
-    <script type="text/javascript" src="javascripts/libs/ember-1.0.0.js"></script>
-    <script type="text/javascript" src="javascripts/libs/ember-data.js"></script>
-    <script type="text/javascript" src="javascripts/app.js"></script>
+      </div>
+    </script>
+
+
+    <script type="text/x-handlebars" data-template-name="index">
+      <div class="container">
+        <div class="page-header">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="about">
+      <div class="container">
+        <div class="page-header">
+          <h1>{{title}}</h1>
+        </div>
+      </div>
+      Text here
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="posts">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">
+                <span class="badge pull-right">{{postCount}}</span><small>Post count</small>
+              </li>
+              {{#each model}}
+              <li>{{#linkTo "post" this}}{{slug}}{{/linkTo}}</li>
+              {{else}}
+              No posts here.
+              {{/each}}
+            </ul>
+          </div>
+          <div class="btn-group">
+            {{#linkTo "posts.new" class="btn btn-default"}}
+            New Post
+            {{/linkTo}}
+          </div>
+        </div>
+        <div class="col-md-9">
+          {{outlet}}
+        </div>
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="_post_detail">
+      <div class="container">
+        <div class="page-header">
+          <div class="row">
+            <div class="col-md-10">
+              <h1>{{title}}</h1>
+            </div>
+            <div class="col-md-2">
+              <img {{bindAttr src="authorGravatar"}}>
+            </div>
+          </div>
+          <div class="panel-body">
+            {{#if body}}
+              {{markdown body}}
+            {{else}}
+              <p class="text-muted">Body</p>
+            {{/if}}
+          </div>
+          {{#unless isDirty}}
+            {{#linkTo "post.edit" model classNames="btn btn-default"}}
+              Edit
+            {{/linkTo}}
+            <a class="btn btn-danger" {{action "destroy"}}>Delete</a>
+          {{/unless}}
+        </div>
+      </div>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="post">
+      {{partial "post_detail"}}
+      {{outlet}}
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="posts/new">
+      <p>Preview:</p>
+      {{partial "post_detail"}}
+
+      <form {{action save on="submit"}} role="form" class="well">
+        {{partial "post_form"}}
+        <div class="form-group">
+          <button type="submit" class="btn btn-default">Save</button>
+          <button {{action "cancel"}} class="btn btn-warning">Cancel</button>
+        </div>
+      </form>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="post/edit">
+      <form {{action update on="submit"}} class="well">
+        {{partial "post_form"}}
+        <div class="form-group">
+          <button type="submit" class="btn btn-default">Save</button>
+          <button {{action "cancel"}} class="btn btn-warning">Cancel</button>
+        </div>
+      </form>
+    </script>
+
+    <script type="text/x-handlebars" data-template-name="_post_form">
+      <div class="form-group">
+        <label for="title">Title</label>
+        {{view Ember.TextField id="title" valueBinding="title" placeholder="Title" class="form-control"
+                               required="true" autofocus="true" id="title"}}
+      </div>
+
+      <div class="form-group">
+        <label for="author">Author</label>
+        {{view Ember.TextField id="author" valueBinding="author" id="author" class="form-control"
+                               placeholder="foo@gmail.com" required="true" type="email"}}
+      </div>
+
+      <div class="form-group">
+        <label for="body">Body</label>
+        {{view Ember.TextArea valueBinding="body" placeholder="Body" id="body" class="form-control"
+                              required="true" rows="20"}}
+        <span class="help-block">Markdown enabled</span>
+      </div>
+    </script>
+
+    <%- js('application') %>
   </body>
 </html>
